@@ -1,11 +1,30 @@
-<div align="center">
+# WKT12 Terminal Display
 
-<!-- WKT12 TERMINAL DISPLAY (updated to look like a real terminal) -->
-<style>
+A small terminal-style system monitor UI. The original README included the working HTML/CSS/JS demo inline, but GitHub strips `<script>` and `<style>` from README.md for security reasons, so the interactive demo will not run when placed directly in this README.
+
+To view the working demo, save the HTML below to `index.html` in this repository and open it in your browser, or enable GitHub Pages for this repo and point it to the branch containing `index.html`.
+
+## Run locally
+
+```bash
+# clone and open the demo
+git clone https://github.com/wkt21/Terminal_display.git
+cd Terminal_display
+# open index.html in your browser (double-click or serve with a local server)
+```
+
+## index.html (copy this into a file and open it in a browser)
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WKT12 Terminal Monitor</title>
+  <style>
 :root{--bg:#000;--card:#020202;--panel:#071109;--text:#33ff66;--muted:#8fbf9a;--accent:#39ff14}
-.wkt12-term{
-  width:760px;max-width:95%;background:var(--bg);border-radius:6px;border:1px solid #051005;padding:18px;font-family:'SFMono-Regular',Menlo,Consolas,Monaco,monospace;color:var(--text);box-shadow:0 10px 50px rgba(0,0,0,0.8);
-}
+.wkt12-term{width:760px;max-width:95%;background:var(--bg);border-radius:6px;border:1px solid #051005;padding:18px;font-family:'SFMono-Regular',Menlo,Consolas,Monaco,monospace;color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,0.6)}
 .wkt12-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .wkt12-title{font-weight:700;color:var(--muted)}
 .wkt12-pill{padding:4px 10px;border:1px solid rgba(57,255,20,0.12);border-radius:999px;font-size:12px;color:var(--muted);background:rgba(57,255,20,0.02)}
@@ -22,7 +41,11 @@
 .wkt12-value, .wkt12-log{font-family:Menlo,Monaco,Consolas,monospace}
 /* responsive */
 @media (max-width:600px){.wkt12-grid{grid-template-columns:repeat(2,1fr)}}
-</style>
+  </style>
+</head>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#08100a;margin:0;padding:24px;">
+
+<div align="center">
 
 <div class="wkt12-term" role="region" aria-label="Terminal monitor">
   <div class="wkt12-header">
@@ -79,7 +102,8 @@
   function updateTextAndBar(valId, barId, min, max, suffix, rawValue){
     const v = (typeof rawValue === 'number')? rawValue : r(min,max);
     const percent = toPercent(v,min,max);
-    document.getElementById(valId).textContent = v + (suffix||'');
+    const valEl = document.getElementById(valId);
+    if (valEl) valEl.textContent = v + (suffix||'');
     const bar = document.getElementById(barId);
     if(bar) bar.style.width = percent+"%";
   }
@@ -100,17 +124,20 @@
 
     // NET: kbps (rx). Map 0..1000kbps
     const rx = r(30,900);
-    document.getElementById('net-val').textContent = rx + 'kbps';
-    document.getElementById('net-bar').style.width = Math.min(100, Math.round(rx/10)) + '%';
+    const netValEl = document.getElementById('net-val');
+    if (netValEl) netValEl.textContent = rx + 'kbps';
+    const netBar = document.getElementById('net-bar');
+    if (netBar) netBar.style.width = Math.min(100, Math.round(rx/10)) + '%';
 
     // append a log line
     const log = document.getElementById('wkt12-log');
+    if (!log) return;
     const msgs = [
-      'cpu=' + document.getElementById('cpu-val').textContent + ' ram=' + document.getElementById('ram-val').textContent,
-      'net=' + document.getElementById('net-val').textContent,
-      'temp=' + document.getElementById('temp-val').textContent,
-      'disk=' + document.getElementById('disk-val').textContent,
-      'battery=' + document.getElementById('batt-val').textContent
+      'cpu=' + (document.getElementById('cpu-val')?.textContent || '') + ' ram=' + (document.getElementById('ram-val')?.textContent || ''),
+      'net=' + (document.getElementById('net-val')?.textContent || ''),
+      'temp=' + (document.getElementById('temp-val')?.textContent || ''),
+      'disk=' + (document.getElementById('disk-val')?.textContent || ''),
+      'battery=' + (document.getElementById('batt-val')?.textContent || '')
     ];
     const line = document.createElement('div');
     line.className = 'wkt12-log-line';
@@ -128,3 +155,13 @@
 </script>
 
 </div>
+</body>
+</html>
+```
+
+## Why this change
+
+- GitHub strips `<script>` and `<style>` tags from README.md to prevent malicious code from running. Embedding the demo directly in the README therefore loses its interactivity.
+- This README now explains how to run the demo locally and includes the complete, working `index.html` file you can copy into the repo.
+
+If you'd like, I can also add the `index.html` file directly to this repository so the demo can be opened locally or published with GitHub Pages — tell me and I'll add it.
